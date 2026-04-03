@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>十个关于你的问题 ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none}
+
+/* 迪士尼梦幻配色背景：辛德瑞拉蓝 + 极光浅紫 + 睡美人粉 */
+.bg{position:fixed;inset:0;background:linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 40%, #ffdde1 80%, #ffffff 100%);z-index:0;animation: gradientBG 15s ease infinite; background-size: 400% 400%;}
+
+@keyframes gradientBG {
+	0% {background-position: 0% 50%;}
+	50% {background-position: 100% 50%;}
+	100% {background-position: 0% 50%;}
+}
+
+/* 梦幻漂浮物：星星与光点 */
+.shapes{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.shapes span{position:absolute;display:block;animation:floatUp linear infinite;opacity:0}
+.shapes span:nth-child(1){left:10%;font-size:24px;animation-duration:14s;animation-delay:0s}
+.shapes span:nth-child(2){left:25%;width:15px;height:15px;background:rgba(255,255,255,0.8);border-radius:50%;box-shadow:0 0 10px #fff;animation-duration:11s;animation-delay:2s}
+.shapes span:nth-child(3){left:40%;font-size:20px;animation-duration:16s;animation-delay:1s}
+.shapes span:nth-child(4){left:55%;width:10px;height:10px;background:rgba(255,255,255,0.6);border-radius:50%;animation-duration:12s;animation-delay:4s}
+.shapes span:nth-child(5){left:70%;font-size:28px;animation-duration:15s;animation-delay:3s}
+.shapes span:nth-child(6){left:85%;width:18px;height:18px;background:rgba(255,215,0,0.4);border-radius:50%;box-shadow:0 0 15px gold;animation-duration:13s;animation-delay:5s}
+.shapes span:nth-child(7){left:15%;font-size:18px;animation-duration:17s;animation-delay:1.5s}
+
+@keyframes floatUp{
+  0%{transform:translateY(110vh) rotate(0deg) scale(0.5);opacity:0}
+  10%{opacity:0.8}
+  85%{opacity:0.6}
+  100%{transform:translateY(-12vh) rotate(360deg) scale(1.1);opacity:0}
+}
+
+/* 音乐按钮 */
+.music-btn{position:fixed;top:16px;right:16px;z-index:200;width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .3s,background .3s}
+.music-btn:active{transform:scale(.9)}
+.music-btn.playing{background:rgba(142,197,252,.4);animation:musicPulse 2s ease-in-out infinite}
+@keyframes musicPulse{0%,100%{box-shadow:0 2px 12px rgba(142,197,252,.3)}50%{box-shadow:0 2px 20px rgba(142,197,252,.7)}}
+.music-btn .note{display:block;line-height:1}
+.music-btn .mute{display:none}
+.music-btn.muted .note{display:none}
+.music-btn.muted .mute{display:block}
+
+/* 页面过渡 */
+.page{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;z-index:10;opacity:0;pointer-events:none;transition:opacity .6s cubic-bezier(.4,0,.2,1)}
+.page.active{opacity:1;pointer-events:auto}
+
+/* 欢迎页卡片 */
+.intro-card{text-align:center;max-width:380px; background: rgba(255,255,255,0.5); padding: 40px 20px; border-radius: 30px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(142,197,252,0.2); border: 2px solid rgba(255,255,255,0.8);}
+.intro-card .big-emoji{font-size:70px;display:block;margin-bottom:16px;animation:bounce 2.5s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.intro-card h1{font-family:'Quicksand','Noto Sans SC',sans-serif;font-size:28px;font-weight:700;color:#5a8dee;margin-bottom:14px;letter-spacing:1px}
+.intro-card .subtitle{font-size:15px;color:#7b9ecc;line-height:1.9;margin-bottom:8px;font-weight:400}
+.intro-card .note{font-size:13px;color:#9aaee0;margin-bottom:30px;font-style:italic}
+.start-btn{background:linear-gradient(135deg,#8ec5fc,#e0c3fc);color:#fff;border:none;padding:15px 58px;border-radius:50px;font-size:17px;font-weight:600;font-family:'Noto Sans SC',sans-serif;cursor:pointer;box-shadow:0 6px 24px rgba(142,197,252,.5);transition:transform .25s,box-shadow .25s;letter-spacing:2px}
+.start-btn:active{transform:scale(.94);box-shadow:0 3px 12px rgba(142,197,252,.35)}
+
+/* 进度条 */
+.progress-wrap{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.5);z-index:100}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#8ec5fc,#e0c3fc,#ffdde1);border-radius:0 3px 3px 0;transition:width .55s cubic-bezier(.4,0,.2,1)}
+
+/* 答题卡片 */
+.q-card{width:100%;max-width:400px;background:rgba(255,255,255,.85);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-radius:26px;padding:32px 24px 28px;box-shadow:0 10px 40px rgba(142,197,252,.15);text-align:center; border: 1px solid rgba(255,255,255,0.9);}
+.q-num{display:inline-block;background:linear-gradient(135deg,#8ec5fc,#e0c3fc);color:#fff;font-family:'Quicksand',sans-serif;font-weight:700;font-size:13px;padding:5px 16px;border-radius:20px;margin-bottom:18px;letter-spacing:1px}
+.q-text{font-size:17px;font-weight:600;color:#395b99;line-height:1.75;margin-bottom:26px}
+.q-deco{font-size:28px;margin-bottom:4px;display:block;opacity:.8}
+
+/* 选项样式 */
+.opts{display:flex;flex-direction:column;gap:11px}
+.opt{background:rgba(255,255,255,.95);border:2px solid #e2edff;border-radius:16px;padding:15px 18px;font-size:14px;color:#5c7cba;cursor:pointer;transition:all .28s cubic-bezier(.4,0,.2,1);text-align:left;line-height:1.55;font-weight:400;position:relative;overflow:hidden}
+.opt:active{transform:scale(.97)}
+.opt::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(142,197,252,.1),rgba(224,195,252,.1));opacity:0;transition:opacity .25s}
+.opt:hover::before,.opt:active::before{opacity:1}
+.opt.sel{border-color:#8ec5fc;background:linear-gradient(135deg,#f0f7ff,#faf5ff);color:#395b99;font-weight:600;transform:scale(1.03);box-shadow:0 4px 18px rgba(142,197,252,.25)}
+.opt.sel::after{content:'✨';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:16px;opacity: 0.8;}
+
+/* 结束卡片 */
+.end-card{text-align:center;width:100%; max-width:380px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px}
+.end-card::-webkit-scrollbar{display:none}
+.end-card .big-emoji{font-size:72px;display:block;margin-bottom:10px;animation:bounce 2.5s ease-in-out infinite}
+.end-card h2{font-family:'Quicksand','Noto Sans SC',sans-serif;font-size:24px;font-weight:700;color:#5a8dee;margin-bottom:6px}
+.end-card .end-sub{font-size:14px;color:#7b9ecc;margin-bottom:22px;font-style:italic}
+
+.letter-box{background:rgba(255,255,255,.85);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-radius:24px;padding:30px 24px;box-shadow:0 8px 32px rgba(142,197,252,.2);text-align:left;margin-bottom:22px;border:2px solid rgba(255,255,255,0.9);position:relative}
+.letter-box::before{content:'';position:absolute;top:-1px;left:30px;right:30px;height:3px;background:linear-gradient(90deg,transparent,#8ec5fc,#e0c3fc,#ffdde1,transparent);border-radius:2px}
+.letter-box p{font-size:15px;color:#395b99;line-height:2.2;margin-bottom:16px;font-weight:400; text-indent: 2em;}
+.letter-box p:last-child{margin-bottom:0;text-align:right;font-weight:500;color:#5a8dee; text-indent: 0;}
+.letter-box .highlight{color:#ff8ba7;font-weight:600; text-decoration: underline; text-decoration-color: rgba(255,139,167,0.3); text-underline-offset: 4px;}
+.letter-box .emoji-deco{display:block;text-align:center;font-size:20px;margin:20px 0 16px;letter-spacing:12px}
+
+/* 结尾浪漫流星雨 */
+.stars-rain{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.stars-rain span{position:absolute;top:-30px;font-size:20px;animation:heartFall linear infinite;opacity:0}
+@keyframes heartFall{
+  0%{transform:translateY(0) rotate(0deg) scale(.6);opacity:0}
+  10%{opacity:.8}
+  90%{opacity:.6}
+  100%{transform:translateY(105vh) rotate(720deg) scale(1);opacity:0}
+}
+
+.page.slide-out{opacity:0;transform:translateX(-40px);transition:opacity .45s,transform .45s cubic-bezier(.4,0,.2,1)}
+.page.slide-in{opacity:0;transform:translateX(40px)}
+.page.slide-in.active{opacity:1;transform:translateX(0);transition:opacity .45s .08s,transform .45s .08s cubic-bezier(.4,0,.2,1)}
+
+@media(max-width:360px){
+  .q-card{padding:26px 18px 22px;border-radius:22px}
+  .q-text{font-size:15px}
+  .opt{padding:12px 14px;font-size:13px}
+  .intro-card h1{font-size:24px}
+  .letter-box{padding:22px 18px}
+  .letter-box p{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="shapes">
+  <span>✨</span><span></span><span>🏰</span>
+  <span></span><span>👑</span><span></span>
+  <span>🦄</span>
+</div>
+
+<audio id="bgm" loop preload="auto" crossorigin="anonymous">
+  <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=canon-in-d-major-19237.mp3" type="audio/mpeg">
+</audio>
+<button class="music-btn muted" id="musicBtn" onclick="toggleMusic()">
+  <span class="note">🎵</span>
+  <span class="mute">🔇</span>
+</button>
+
+<div class="progress-wrap" id="progressWrap" style="display:none">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<div class="page active" id="intro">
+  <div class="intro-card">
+    <span class="big-emoji">🏰</span>
+    <h1>十个关于你的问题</h1>
+    <p class="subtitle">
+      我想更深一点、更近一点地了解你<br>
+      这里没有标准答案<br>
+      每一次选择，都是通往你内心童话的钥匙 🗝️
+    </p>
+    <p class="note">大概需要 2 分钟，准备好开启魔法了吗？✨</p>
+    <button class="start-btn" onclick="startQuiz()">开启童话 💫</button>
+  </div>
+</div>
+
+<div class="page" id="q0">
+  <div class="q-card">
+    <span class="q-deco">🪄</span>
+    <span class="q-num">Q 1 / 10</span>
+    <p class="q-text">如果神仙教母的魔法棒可以实现一个非物质的愿望，你最希望获得什么？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,0)">A. 永远不失去对这个世界的热爱与好奇心</div>
+      <div class="opt" onclick="pick(this,0)">B. 拥有随时随地治愈自己和他人情绪的能力</div>
+      <div class="opt" onclick="pick(this,0)">C. 无论顺境逆境，都能保持内心的绝对平静</div>
+      <div class="opt" onclick="pick(this,0)">D. 遇到一个能完全理解我灵魂、接住我所有疲惫的伴侣</div>
+      <div class="opt" onclick="pick(this,0)">E. 拥有回到过去，重新选择人生某一个岔路口的勇气</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q1">
+  <div class="q-card">
+    <span class="q-deco">🏕️</span>
+    <span class="q-num">Q 2 / 10</span>
+    <p class="q-text">当你感到疲惫、委屈或被世界误解时，什么样的“避风港”最能让你重新充满电？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,1)">A. 一个人躲进只有自己的小房间，听歌发呆到天明</div>
+      <div class="opt" onclick="pick(this,1)">B. 去游乐园或大自然，借由外在的开阔释放心里的压抑</div>
+      <div class="opt" onclick="pick(this,1)">C. 收到在意的人一个什么都不问的、紧紧的拥抱</div>
+      <div class="opt" onclick="pick(this,1)">D. 投入到自己热爱的一件小事中，比如画画、做饭或拼乐高</div>
+      <div class="opt" onclick="pick(this,1)">E. 找那个完全懂我的人，毫无保留地倾诉一场</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q2">
+  <div class="q-card">
+    <span class="q-deco">🕊️</span>
+    <span class="q-num">Q 3 / 10</span>
+    <p class="q-text">在你看来，两个人之间最理想、最让你心动的“羁绊”是哪一种状态？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,2)">A. 像两棵并排的树，根在地下交错，枝叶在云端相拥</div>
+      <div class="opt" onclick="pick(this,2)">B. 像彼此专属的充电宝，在对方最脆弱时永远提供无限能量</div>
+      <div class="opt" onclick="pick(this,2)">C. 像两个无所畏惧的探险家，牵着手一起去解锁世界的未知</div>
+      <div class="opt" onclick="pick(this,2)">D. 像一本读不完的书，永远对彼此保留着新鲜感与探索欲</div>
+      <div class="opt" onclick="pick(this,2)">E. 像一张安稳柔软的旧沙发，在他面前可以肆无忌惮做最不完美的自己</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q3">
+  <div class="q-card">
+    <span class="q-deco">🪞</span>
+    <span class="q-num">Q 4 / 10</span>
+    <p class="q-text">如果要用迪士尼里的某个元素来形容你最深处的性格底色，你觉得是？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,3)">A. 《美女与野兽》的玫瑰：带点防备的刺，但内心热烈且极度渴望被懂</div>
+      <div class="opt" onclick="pick(this,3)">B. 《灰姑娘》的水晶鞋：依然相信奇迹，愿意耐心等待那个真正契合的人</div>
+      <div class="opt" onclick="pick(this,3)">C. 《阿拉丁》的魔毯：向往自由，内心装满了天马行空的浪漫幻想</div>
+      <div class="opt" onclick="pick(this,3)">D. 《狮子王》的荣耀石：坚韧独立，总是默默守护着自己珍视的人和事</div>
+      <div class="opt" onclick="pick(this,3)">E. 《冰雪奇缘》的雪花：外表看起来可能清冷，但内心有着独特的晶莹与纯粹</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q4">
+  <div class="q-card">
+    <span class="q-deco">🎭</span>
+    <span class="q-num">Q 5 / 10</span>
+    <p class="q-text">在什么样的人面前，你会最自然、最没有包袱地卸下所有的防备和伪装？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,4)">A. 那个见证过我最狼狈、最不堪的一面，却依然没有松开手的人</div>
+      <div class="opt" onclick="pick(this,4)">B. 能够一眼看穿我所有的“我没事”和逞强，温柔地接住我情绪的人</div>
+      <div class="opt" onclick="pick(this,4)">C. 无论我做什么，都永远用偏爱和坚定的肯定来回应我的人</div>
+      <div class="opt" onclick="pick(this,4)">D. 和我有着极高灵魂共鸣，无需多言就能懂我奇奇怪怪点子的人</div>
+      <div class="opt" onclick="pick(this,4)">E. 愿意放下手机，花时间耐心倾听我所有无聊废话的人</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q5">
+  <div class="q-card">
+    <span class="q-deco">☔</span>
+    <span class="q-num">Q 6 / 10</span>
+    <p class="q-text">在一段对你很重要的关系中，如果遇到了不可避免的剧烈分歧，你更希望如何解决？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,5)">A. 先各自退回安全距离冷静，等情绪完全平复后再理性沟通</div>
+      <div class="opt" onclick="pick(this,5)">B. 哪怕吵架也要当天说清楚，绝不把问题和隔阂留到明天</div>
+      <div class="opt" onclick="pick(this,5)">C. 努力站在对方的角度思考，各退一步寻找折中的妥协方案</div>
+      <div class="opt" onclick="pick(this,5)">D. 用一个出其不意的拥抱或玩笑打破僵局，先和好，再去慢慢讲理</div>
+      <div class="opt" onclick="pick(this,5)">E. 坐下来坦诚地表达自己真实的脆弱和委屈，而不是相互指责谁对谁错</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q6">
+  <div class="q-card">
+    <span class="q-deco">⏳</span>
+    <span class="q-num">Q 7 / 10</span>
+    <p class="q-text">假如可以把一段记忆变成一颗永远悬挂在夜空、为你发光的星星，你会选择保留哪种记忆？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,6)">A. 第一次凭借自己的坚持和努力，实现某个重要小梦想的骄傲瞬间</div>
+      <div class="opt" onclick="pick(this,6)">B. 童年时无忧无虑、被家人全心全意爱着和保护着的某个温暖午后</div>
+      <div class="opt" onclick="pick(this,6)">C. 某次独自旅行或漫步中，被大自然绝美风景震撼到灵魂的宁静时刻</div>
+      <div class="opt" onclick="pick(this,6)">D. 在人生最低谷、最无助的时候，某个人坚定地向我伸出手的瞬间</div>
+      <div class="opt" onclick="pick(this,6)">E. 和喜欢的人心意完全相通，在风中相视而笑、觉得世界静止的那一秒</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q7">
+  <div class="q-card">
+    <span class="q-deco">💎</span>
+    <span class="q-num">Q 8 / 10</span>
+    <p class="q-text">你觉得一个人生命中，最核心、最不能妥协的东西是什么？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,7)">A. 内心世界的绝对自由，和对事物不盲从的独立思考能力</div>
+      <div class="opt" onclick="pick(this,7)">B. 无论何时何地，无论处于何种境遇，都能先爱自己、取悦自己的能力</div>
+      <div class="opt" onclick="pick(this,7)">C. 追求自己真正热爱之事的权利，以及不被世俗眼光定义的勇气</div>
+      <div class="opt" onclick="pick(this,7)">D. 身边始终有可以毫无保留信任、随时可以依靠的家人或爱人</div>
+      <div class="opt" onclick="pick(this,7)">E. 保持最高级的真诚，即使受过伤也依然愿意相信美好的那份纯粹</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q8">
+  <div class="q-card">
+    <span class="q-deco">💌</span>
+    <span class="q-num">Q 9 / 10</span>
+    <p class="q-text">当你真正对一个人心动，并且想让他知道时，你最倾向于用什么方式表达？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,8)">A. 打直球，找个合适的时机直接真诚地告诉他我的心意</div>
+      <div class="opt" onclick="pick(this,8)">B. 用行动默默关心，记住他随口说出的小偏好和小细节</div>
+      <div class="opt" onclick="pick(this,8)">C. 花心思准备一份特别的小礼物或手写信，为他制造专属的浪漫惊喜</div>
+      <div class="opt" onclick="pick(this,8)">D. 尽可能多地出现在他的生活里，用高质量的陪伴当做最长情的告白</div>
+      <div class="opt" onclick="pick(this,8)">E. 频繁地和他分享生活里鸡毛蒜皮的日常，允许他走进我的私人领地</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="q9">
+  <div class="q-card">
+    <span class="q-deco">🎠</span>
+    <span class="q-num">Q 10 / 10</span>
+    <p class="q-text">最后一个问题，做完这个测试的此时此刻，你心里浮现的第一个感受是什么？</p>
+    <div class="opts">
+      <div class="opt" onclick="pick(this,9)">A. 觉得有些问题真的不可思议地触动到了自己内心某个柔软的角落</div>
+      <div class="opt" onclick="pick(this,9)">B. 突然很好奇，那个专门给我发这个测试的人，此刻到底在想什么？</div>
+      <div class="opt" onclick="pick(this,9)">C. 感觉像经历了一场小小的灵魂深呼吸，平时隐藏的思绪被梳理了</div>
+      <div class="opt" onclick="pick(this,9)">D. 隐隐期待着未来能有那么一个人，可以和我并肩坐着探讨这些问题</div>
+      <div class="opt" onclick="pick(this,9)">E. 觉得生活偶尔有点奇妙的仪式感挺好的，准备微笑着去拥抱接下来的日常</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="ending">
+  <div class="end-card">
+    <span class="big-emoji">👑</span>
+    <h2>欢迎来到最终章</h2>
+    <p class="end-sub">谢谢你，愿意把你的小世界向我敞开一条缝隙 ♡</p>
+    <div class="letter-box">
+      <p>其实，设计这十个问题，用了我好多好多的心思。</p>
+
+      <p>它们不是为了测试出什么标准答案，<span class="highlight">因为你本身就是最美好的答案。</span>我只是太渴望了解你了，想知道你开心时眼里的光，委屈时躲藏的角落，想知道你内心那座城堡的样子。</p>
+
+      <p>每多了解你一点，就觉得你比我想象中更让人心动。你的每一个回答，都像是一块神奇的拼图，慢慢拼出了一个我越来越喜欢的你。</p>
+
+      <span class="emoji-deco">✨ 🦄 🏰 🌹 ✨</span>
+
+      <p>我不知道未来会通向哪个童话，但我知道，此时此刻的我，正极其认真、极其赤诚地喜欢着你。</p>
+
+      <p>如果可以，未来的日子里，<span class="highlight">我希望能申请成为你那个避风港，成为那个懂你奇奇怪怪、陪你可可爱爱的人。</span>也许我还不够完美，但我一定会用十二分的真诚，去保护你心底的那份纯粹。</p>
+
+      <p>期待有一天，能面对面，亲口听你分享这些选项背后的故事。</p>
+
+      <p>—— 满眼都是你的专属魔法师 💌</p>
+
+    </div>
+  </div>
+</div>
+
+<div class="stars-rain" id="heartsRain"></div>
+
+<script>
+const total = 10;
+let current = -1;
+let answers = [];
+let musicPlaying = false;
+
+// 浪漫流星雨/光点特效
+(function(){
+  const c = document.getElementById('heartsRain');
+  const hearts = ['✨','💫','🌟','🪄','🫧','🌸','👑','🤍'];
+  for(let i = 0; i < 20; i++){
+    const s = document.createElement('span');
+    s.textContent = hearts[i % hearts.length];
+    s.style.left = (Math.random()*96 + 2) + '%';
+    s.style.fontSize = (12 + Math.random()*18) + 'px';
+    s.style.animationDuration = (5 + Math.random()*7) + 's';
+    s.style.animationDelay = (Math.random()*8) + 's';
+    c.appendChild(s);
+  }
+})();
+
+// ═══ Music ═══
+const bgm = document.getElementById('bgm');
+bgm.volume = 0.4;
+
+function toggleMusic(){
+  const btn = document.getElementById('musicBtn');
+  if(musicPlaying){
+    bgm.pause();
+    btn.classList.remove('playing');
+    btn.classList.add('muted');
+    musicPlaying = false;
+  } else {
+    bgm.play().then(()=>{
+      btn.classList.add('playing');
+      btn.classList.remove('muted');
+      musicPlaying = true;
+    }).catch(()=>{});
+  }
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active','slide-out','slide-in');
+  });
+  document.getElementById(id).classList.add('active');
+}
+
+function transitionTo(fromId, toId){
+  const from = document.getElementById(fromId);
+  const to = document.getElementById(toId);
+  from.classList.add('slide-out');
+  setTimeout(() => {
+    from.classList.remove('active','slide-out');
+    to.classList.add('slide-in');
+    void to.offsetWidth;
+    to.classList.add('active');
+    setTimeout(() => to.classList.remove('slide-in'), 500);
+  }, 400);
+}
+
+function startQuiz(){
+  current = 0;
+  document.getElementById('progressWrap').style.display = 'block';
+  updateProgress();
+  transitionTo('intro','q0');
+  // 点击开始时自动播放卡农
+  if(!musicPlaying){
+    bgm.play().then(()=>{
+      document.getElementById('musicBtn').classList.add('playing');
+      document.getElementById('musicBtn').classList.remove('muted');
+      musicPlaying = true;
+    }).catch(()=>{});
+  }
+}
+
+function pick(el, qIndex){
+  const opts = el.parentElement.querySelectorAll('.opt');
+  opts.forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  answers[qIndex] = el.textContent.trim();
+  opts.forEach(o => o.style.pointerEvents = 'none');
+
+  setTimeout(() => {
+    if(qIndex < total - 1){
+      current = qIndex + 1;
+      updateProgress();
+      transitionTo('q'+qIndex, 'q'+(qIndex+1));
+    } else {
+      current = total;
+      updateProgress();
+      setTimeout(() => {
+        document.getElementById('progressWrap').style.display = 'none';
+      }, 500);
+      transitionTo('q'+qIndex, 'ending');
+
+      // 这里如果需要，你可以把 answers 数组打印出来或者通过接口发送给你自己
+      console.log("她的回答是:", answers);
+    }
+  }, 900);
+}
+
+function updateProgress(){
+  const pct = ((current) / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+</script>
+</body>
+</html>
